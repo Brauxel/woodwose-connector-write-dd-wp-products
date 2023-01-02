@@ -41,10 +41,13 @@ export const handler: APIGatewayProxyHandlerV2 = async (
     })
   }
 
-  if (event.requestContext.http.method !== 'POST') {
+  if (
+    event.requestContext.http.method !== 'POST' &&
+    event.requestContext.http.method !== 'PATCH'
+  ) {
     return logAndReturnError(`Please provide a valid http method`, {
-      name: 'Only POST is supported',
-      message: `Please send a POST http request to add a new product`,
+      name: 'Only POST and PATCH are supported',
+      message: `Please send a POST http request to add a new product and a PATCH http request to update existing products`,
     })
   }
 
@@ -88,6 +91,19 @@ export const handler: APIGatewayProxyHandlerV2 = async (
         ],
       })
     }
+
+    if (event.requestContext.http.method === 'PATCH') {
+      Statements.push({
+        Statement: `UPDATE ${process.env.WORDPRESS_PRODUCTS_TABLE_NAME} SET variations=?, name=?, date_modified_gmt=? WHERE id=? and slug=?`,
+        Parameters: [
+          { SS: variations },
+          { S: name },
+          { S: currentDate },
+          { S: id },
+          { S: slug },
+        ],
+      })
+    }
   }
 
   const params = {
@@ -98,7 +114,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (
   const errors = extractErrorsFromDynamoDbResponses(
     data.Responses as DynamoDBResponses[]
   )
-
   if (errors.length > 0) {
     // TODO: Standardize the error response, also update logAndReturnError() function for an array of errors
     return {
