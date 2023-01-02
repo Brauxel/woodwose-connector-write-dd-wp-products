@@ -100,7 +100,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (
           { S: name },
           { S: currentDate },
           { S: id },
-          { SS: slug },
+          { S: slug },
         ],
       })
     }
@@ -114,7 +114,6 @@ export const handler: APIGatewayProxyHandlerV2 = async (
   const errors = extractErrorsFromDynamoDbResponses(
     data.Responses as DynamoDBResponses[]
   )
-
   if (errors.length > 0) {
     // TODO: Standardize the error response, also update logAndReturnError() function for an array of errors
     return {
