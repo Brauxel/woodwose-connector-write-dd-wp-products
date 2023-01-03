@@ -21,14 +21,9 @@ process.on('uncaughtException', (err) => {
 })
 
 export const handler: APIGatewayProxyHandlerV2 = async (
-  event: APIGatewayProxyEventV2,
-  context
+  event: APIGatewayProxyEventV2
 ): Promise<APIGatewayProxyResultV2> => {
-  logger.info(
-    `Handler function called with event: ${JSON.stringify(
-      event
-    )} and with context: ${JSON.stringify(context)}`
-  )
+  logger.info(`Handler function called with event: ${JSON.stringify(event)}`)
 
   try {
     await hydrateEnv()
