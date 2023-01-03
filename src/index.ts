@@ -34,10 +34,8 @@ export const handler: APIGatewayProxyHandlerV2 = async (
     await hydrateEnv()
   } catch (error) {
     const { message } = error as Error
-    return logAndReturnError(
-      'Please provide DEFAULT_REGION in environment variables',
-      JSON.parse(message)
-    )
+    const parsedMessage = JSON.parse(message)
+    return logAndReturnError(parsedMessage.message, parsedMessage)
   }
 
   if (!event.body) {
