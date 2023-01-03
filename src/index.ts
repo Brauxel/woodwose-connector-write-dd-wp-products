@@ -9,10 +9,7 @@ import {
 } from 'aws-lambda'
 import { logger } from './utils/logger/buildLogger'
 import { hydrateEnv } from './utils/secrets/hydrateEnv'
-import {
-  logAndReturnError,
-  logAndThrowError,
-} from './utils/logger/loggerHelpers'
+import { logAndReturnError } from './utils/logger/loggerHelpers'
 import { validateSingleProductInBody } from './utils/validators/productDataValidators'
 import { ddbDocClient } from './libs/ddbDocClient'
 import { DynamoDBResponses, StatusCodes } from './types/dataTypes'
@@ -32,10 +29,19 @@ export const handler: APIGatewayProxyHandlerV2 = async (
       event
     )} and with context: ${JSON.stringify(context)}`
   )
-  await hydrateEnv()
+
+  try {
+    await hydrateEnv()
+  } catch (error) {
+    const { message } = error as Error
+    return logAndReturnError(
+      'Please provide DEFAULT_REGION in environment variables',
+      JSON.parse(message)
+    )
+  }
 
   if (!event.body) {
-    return logAndThrowError('Validation Error in provided event', {
+    return logAndReturnError('Validation Error in provided event', {
       name: 'No arguments provided',
       message:
         'Please provide an array of products with all the required properties',
@@ -54,7 +60,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (
 
   const parsedBody = JSON.parse(event.body)
   if (parsedBody.length === 0) {
-    return logAndThrowError('Validation Error in provided products', {
+    return logAndReturnError('Validation Error in provided products', {
       name: 'No new products provided',
       message:
         'Please provide an array of products with all the required properties',

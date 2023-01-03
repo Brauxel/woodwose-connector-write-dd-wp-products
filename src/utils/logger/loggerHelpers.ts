@@ -1,14 +1,14 @@
 import { StatusCodes } from '../../types/dataTypes'
 import { logger } from './buildLogger'
 
-export const logAndThrowError = (message: string, error: Error) => {
-  logger.error(message, new Error(`${JSON.stringify(error)}`))
+export const logAndThrowError = (error: Error) => {
+  logger.error(new Error(JSON.stringify(error)))
 
-  throw new Error(message)
+  throw new Error(JSON.stringify(error))
 }
 
 export const logAndReturnError = (description: string, error: Error) => {
-  logger.error(description, new Error(`${JSON.stringify(error)}`))
+  logger.error(new Error(JSON.stringify(error)))
 
   return {
     statusCode: StatusCodes.ERROR,
