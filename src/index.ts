@@ -94,7 +94,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (
 
     if (event.requestContext.http.method === 'PATCH') {
       Statements.push({
-        Statement: `UPDATE ${process.env.WORDPRESS_PRODUCTS_TABLE_NAME} SET variations=?, name=?, date_modified_gmt=? WHERE id=? and slug=?`,
+        Statement: `UPDATE ${process.env.WORDPRESS_PRODUCTS_TABLE_NAME} SET "variations"=?, "name"=?, "date_modified_gmt"=? WHERE "id"=? and "slug"=?`,
         Parameters: [
           { SS: variations },
           { S: name },
